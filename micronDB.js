@@ -6,6 +6,7 @@ const micronDB=function(){return{db:[],hashTraverse:function(t,r){if(this.db[t])
 
 const fs = require("fs");
 const express = require("express");
+const bodyParser = require("body-parser");
 const Promise = require("promise");
 const port = 1337;
 const version = "0.12";
@@ -32,20 +33,25 @@ load("./db.json");
 
 const app = express();
 
+const jsonParser = bodyParser.json();
+
 app.get("/", (req, res) => {
 	res.send(logo);
 });
 
-app.get("/query", (req, res) => {
-
+app.get("/query", jsonParser, (req, res) => {
+	let result = db.query(req.body);
+	res.send(result);
 });
 
-app.post("/hash", (req, res) => {
-
+app.post("/hash", jsonParser, (req, res) => {
+	let result = db.hash(req.body);
+	res.send(result);
 });
 
-app.patch("/query", (req, res) => {
-
+app.patch("/:id", jsonParser, (req, res) => {
+	db.get(req.params.id);
+	res.send(req.body);
 });
 
 app.listen(port, () => {
